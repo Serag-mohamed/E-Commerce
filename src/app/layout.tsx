@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/navpar';
 import Footer from '@/components/footer';
 import { CartProvider } from '@/contexts/CartContext';
+import { Suspense } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,7 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        </CartProvider>
         <Footer />
       </body>
     </html>

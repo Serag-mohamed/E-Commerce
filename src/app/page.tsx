@@ -1,12 +1,9 @@
-// app/home/page.tsx
 'use client';
-
 import useSWR from 'swr';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// واجهة المنتج
 interface Product {
   id: number;
   title: string;
@@ -15,7 +12,6 @@ interface Product {
   category: string;
 }
 
-// الفئات المسموح بها
 const ALLOWED_PRODUCT_CATEGORIES = [
   'electronics',
   'jewelery',
@@ -23,7 +19,6 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "women's clothing",
 ];
 
-// تحقق من رابط صورة HTTPS
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -32,7 +27,6 @@ const validateImageUrl = (url: string) => {
   }
 };
 
-// دالة fetch لـ SWR
 const fetcher = (url: string) =>
   fetch(url).then((res) => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
