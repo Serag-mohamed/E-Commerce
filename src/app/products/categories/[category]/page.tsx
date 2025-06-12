@@ -13,6 +13,7 @@ interface Product {
   rating: { rate: number; count: number };
 }
 
+// دوال fetch للوصول للمنتجات والفئات
 async function fetchProductsData(): Promise<Product[]> {
   const res = await fetch('https://fakestoreapi.com/products', {
     next: { revalidate: 14400 },
@@ -37,7 +38,6 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "men's clothing",
   "women's clothing",
 ];
-
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -46,10 +46,11 @@ const validateImageUrl = (url: string) => {
   }
 };
 
+// ✅ دالة توليد المسارات الثابتة لكل فئة
 export async function generateStaticParams(): Promise<{ category: string }[]> {
   const categories = await fetchCategoriesData();
   return categories
-    .filter((cat) => ALLOWED_PRODUCT_CATEGORIES.includes(cat))
+    .filter((c) => ALLOWED_PRODUCT_CATEGORIES.includes(c))
     .map((category) => ({ category: encodeURIComponent(category) }));
 }
 
@@ -59,12 +60,9 @@ export default async function CategoryProductsPage({
   params: Promise<{ category: string }>;
 }) {
   const { category: rawCategory } = await params;
-  const currentCategory = decodeURIComponent(rawCategory); // فك التشفير لضبط الفئة الأصلية :contentReference[oaicite:1]{index=1}
+  const currentCategory = decodeURIComponent(rawCategory);
 
-  // التحقق من الفئة المسموح بها
-  if (!ALLOWED_PRODUCT_CATEGORIES.includes(currentCategory)) {
-    return notFound();
-  }
+  if (!ALLOWED_PRODUCT_CATEGORIES.includes(currentCategory)) return notFound();
 
   let products: Product[] = [];
   let categories: string[] = [];
@@ -82,9 +80,9 @@ export default async function CategoryProductsPage({
         allCategories.filter((c) => ALLOWED_PRODUCT_CATEGORIES.includes(c))
       ),
     ];
-  } catch (err: unknown) {
-    fetchError = err instanceof Error ? err.message : 'Unexpected error';
+  } catch (err) {
     console.error('CategoryProductsPage error:', err);
+    fetchError = err instanceof Error ? err.message : 'Unexpected error';
     categories = ['all', ...ALLOWED_PRODUCT_CATEGORIES];
   }
 
@@ -103,50 +101,43 @@ export default async function CategoryProductsPage({
 
   return (
     <main className='max-w-7xl mx-auto px-4 py-10'>
-      <h1 className=' text-center text-4xl font-bold text-blue-800 mb-8 capitalize'>
+      <h1 className='text-center text-4xl font-bold text-blue-800 mb-8 capitalize'>
         {currentCategory === 'all'
           ? 'All Products'
           : currentCategory.replace(/-/g, ' ')}
       </h1>
 
-      {/* شريط الفئات */}
       <div className='mb-14 flex justify-center'>
         <ul className='flex flex-wrap gap-2'>
-          {categories.map((category) => (
-            <li key={category}>
+          {categories.map((cat) => (
+            <li key={cat}>
               <Link
                 href={
-                  category === 'all'
+                  cat === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeURIComponent(category)}`
+                    : `/products/categories/${encodeURIComponent(cat)}`
                 }
-                className={`inline-block px-4 py-2 rounded-full transition capitalize ${
-                  (category === 'all' && currentCategory === 'all') ||
-                  category === currentCategory
+                className={`inline-block px-4 py-2 rounded-full capitalize transition ${
+                  (cat === 'all' && currentCategory === 'all') ||
+                  cat === currentCategory
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-800 hover:bg-blue-100 hover:text-blue-800'
+                    : 'bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800'
                 }`}
               >
-                {category.replace(/-/g, ' ')}
+                {cat.replace(/-/g, ' ')}
               </Link>
             </li>
           ))}
         </ul>
       </div>
 
-      {/* عرض المنتجات أو عدم وجودها */}
       {products.length === 0 ? (
         <div className='text-center text-gray-600 p-8'>
-          <p>
-            No products found in the {currentCategory.replace(/-/g, ' ')}{' '}
-            category at the moment.
-          </p>
-          <p className='mt-2'>
-            Please check back later or try another category!
-          </p>
+          <p>No products found in {currentCategory.replace(/-/g, ' ')}.</p>
+          <p className='mt-2'>Please check again later.</p>
           <Link
             href='/products'
-            className='text-blue-600 hover:underline mt-4 block'
+            className='text-blue-600 hover:underline block mt-4'
           >
             Back to all products
           </Link>
@@ -157,9 +148,9 @@ export default async function CategoryProductsPage({
             <Link
               key={product.id}
               href={`/products/${product.id}`}
-              className='relative rounded-lg shadow-md p-4 hover:shadow-lg transition bg-white group text-center'
+              className='relative rounded-lg shadow-md p-4 hover:shadow-lg transition bg-white group text-center overflow-hidden'
             >
-              <div className='absolute z-10 inset-0 bg-blue-800/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition rounded-lg'>
+              <div className='absolute inset-0 z-10 bg-blue-800/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition rounded-lg'>
                 <span className='text-white font-semibold'>View Details</span>
               </div>
               {validateImageUrl(product.image) ? (
@@ -169,7 +160,7 @@ export default async function CategoryProductsPage({
                   priority
                   width={250}
                   height={250}
-                  className='mx-auto object-contain h-56 group-hover:scale-105 transition'
+                  className='mx-auto object-contain h-56 group-hover:scale-105 transition-transform duration-300'
                 />
               ) : (
                 <div className='h-56 bg-gray-200 flex items-center justify-center rounded-lg'>
