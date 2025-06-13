@@ -80,9 +80,13 @@ export default async function ProductsPage() {
           {categories.map((category) => (
             <li key={category}>
               <Link
-                href={`/products/categories/${
-                  category === "men's clothing" ? 'mens-clothing' : category
-                }`}
+                href={`/products/categories/${encodeURIComponent(
+                  category === "men's clothing"
+                    ? 'mens-clothing'
+                    : category === "women's clothing"
+                    ? 'womens-clothing'
+                    : category
+                )}`}
                 className={`inline-block px-4 py-2 rounded-full transition duration-200 capitalize ${
                   category === 'all'
                     ? 'bg-blue-600 text-white shadow-md'
