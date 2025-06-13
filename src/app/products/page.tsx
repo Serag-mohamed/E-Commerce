@@ -36,13 +36,6 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "women's clothing",
 ];
 
-function encodeRFC3986URIComponent(str: string) {
-  return encodeURIComponent(str).replace(
-    /[!'()*]/g,
-    (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()
-  );
-}
-
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -90,9 +83,7 @@ export default async function ProductsPage() {
                 href={
                   category === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeRFC3986URIComponent(
-                        category
-                      )}`
+                    : `/products/categories/${encodeURI(category)}`
                 }
                 className={`inline-block px-4 py-2 rounded-full transition duration-200 capitalize ${
                   category === 'all'
@@ -126,7 +117,6 @@ export default async function ProductsPage() {
               key={product.id}
               className='relative rounded-lg shadow-md p-4 hover:shadow-lg transition bg-white overflow-hidden group flex flex-col items-center text-center'
             >
-              {/* تراكب "View Details" */}
               <div className='absolute inset-0 bg-blue-800/70 opacity-0 group-hover:opacity-100 z-10 flex items-center justify-center transition duration-300 rounded-lg'>
                 <span className='text-white text-lg font-semibold'>
                   View Details
