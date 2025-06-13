@@ -36,13 +36,6 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "women's clothing",
 ];
 
-function encodeRFC3986URIComponent(str: string) {
-  return encodeURIComponent(str).replace(
-    /[!'()*]/g,
-    (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()
-  );
-}
-
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -90,9 +83,13 @@ export default async function ProductsPage() {
                 href={
                   category === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeRFC3986URIComponent(
-                        category
-                      )}`
+                    : category === 'electronics'
+                    ? '/products/categories/electronics'
+                    : category === 'jewelery'
+                    ? 'products/categories/jewelery'
+                    : category === "men's clothing"
+                    ? '/products/categories/men%27s%20clothing'
+                    : '/products/categories/women%27s%20clothing'
                 }
                 className={`inline-block px-4 py-2 rounded-full transition duration-200 capitalize ${
                   category === 'all'
