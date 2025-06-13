@@ -38,6 +38,21 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "men's clothing",
   "women's clothing",
 ];
+
+const CATEGORY_PATH_MAP: Record<string, string> = {
+  electronics: 'electronics',
+  jewelery: 'jewelery',
+  "men's clothing": 'mens-clothing',
+  "women's clothing": 'womens-clothing',
+};
+
+const PATH_CATEGORY_MAP: Record<string, string> = {
+  electronics: 'electronics',
+  jewelery: 'jewelery',
+  'mens-clothing': "men's clothing",
+  'womens-clothing': "women's clothing",
+};
+
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -51,7 +66,7 @@ export async function generateStaticParams(): Promise<{ category: string }[]> {
   const categories = await fetchCategoriesData();
   return categories
     .filter((c) => ALLOWED_PRODUCT_CATEGORIES.includes(c))
-    .map((category) => ({ category: encodeURIComponent(category) }));
+    .map((category) => ({ category: CATEGORY_PATH_MAP[category] }));
 }
 
 export default async function CategoryProductsPage({
@@ -60,9 +75,10 @@ export default async function CategoryProductsPage({
   params: Promise<{ category: string }>;
 }) {
   const { category: rawCategory } = await params;
-  const currentCategory = decodeURIComponent(rawCategory);
+  const currentCategory = PATH_CATEGORY_MAP[rawCategory];
 
-  if (!ALLOWED_PRODUCT_CATEGORIES.includes(currentCategory)) return notFound();
+  if (!currentCategory || !ALLOWED_PRODUCT_CATEGORIES.includes(currentCategory))
+    return notFound();
 
   let products: Product[] = [];
   let categories: string[] = [];
@@ -115,12 +131,12 @@ export default async function CategoryProductsPage({
                 href={
                   cat === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeURIComponent(cat)}`
+                    : `/products/categories/${CATEGORY_PATH_MAP[cat]}`
                 }
-                className={`inline-block px-4 py-2 rounded-full capitalize transition ${
+                className={`inline-block px-4 py-2 rounded-full capitalize transition duration-200 ${
                   (cat === 'all' && currentCategory === 'all') ||
                   cat === currentCategory
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-blue-600 text-white shadow-md'
                     : 'bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800'
                 }`}
               >
