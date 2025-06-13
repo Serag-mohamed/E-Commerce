@@ -117,7 +117,6 @@ export default async function CategoryProductsPage({
                     ? '/products'
                     : `/products/categories/${encodeURIComponent(cat)}`
                 }
-                prefetch={false}
                 className={`inline-block px-4 py-2 rounded-full capitalize transition ${
                   (cat === 'all' && currentCategory === 'all') ||
                   cat === currentCategory
