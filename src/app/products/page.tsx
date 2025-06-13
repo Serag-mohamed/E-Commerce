@@ -36,6 +36,13 @@ const ALLOWED_PRODUCT_CATEGORIES = [
   "women's clothing",
 ];
 
+function encodeRFC3986URIComponent(str: string) {
+  return encodeURIComponent(str).replace(
+    /[!'()*]/g,
+    (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()
+  );
+}
+
 const validateImageUrl = (url: string) => {
   try {
     return new URL(url).protocol === 'https:';
@@ -74,22 +81,20 @@ export default async function ProductsPage() {
       <h1 className='text-4xl font-bold text-blue-800 mb-8 text-center'>
         All Products
       </h1>
-      {/* ..rest of UI unchanged.. */}
+
       <div className='mb-14 flex justify-center'>
         <ul className='flex flex-wrap justify-center gap-2'>
           {categories.map((category) => (
             <li key={category}>
               <Link
-                // رابط الفئة: 'all' يذهب لصفحة المنتجات الرئيسية، وباقي الفئات تذهب لصفحة الفئة الخاصة بها
                 href={
                   category === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeURIComponent(
+                    : `/products/categories/${encodeRFC3986URIComponent(
                         category
-                      ).replace(/'/g, '%27')}`
+                      )}`
                 }
                 className={`inline-block px-4 py-2 rounded-full transition duration-200 capitalize ${
-                  // تمييز زر "All Products" لأنه الصفحة النشطة افتراضيًا
                   category === 'all'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800'
@@ -102,7 +107,6 @@ export default async function ProductsPage() {
         </ul>
       </div>
 
-      {/* عرض رسالة خطأ أو رسالة عدم وجود منتجات */}
       {error ? (
         <div className='bg-red-50 text-red-600 p-4 rounded-lg mb-6 text-center'>
           <p className='font-semibold'>Error loading products:</p>
@@ -115,7 +119,6 @@ export default async function ProductsPage() {
           <p className='text-md mt-2'>Please check back later!</p>
         </div>
       ) : (
-        // شبكة عرض المنتجات
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {products.map((product) => (
             <Link
@@ -123,14 +126,13 @@ export default async function ProductsPage() {
               key={product.id}
               className='relative rounded-lg shadow-md p-4 hover:shadow-lg transition bg-white overflow-hidden group flex flex-col items-center text-center'
             >
-              {/* تراكب "View Details" الذي يظهر عند التحويم */}
+              {/* تراكب "View Details" */}
               <div className='absolute inset-0 bg-blue-800/70 opacity-0 group-hover:opacity-100 z-10 flex items-center justify-center transition duration-300 rounded-lg'>
                 <span className='text-white text-lg font-semibold'>
                   View Details
                 </span>
               </div>
 
-              {/* عرض صورة المنتج باستخدام next/image أو رسالة "Invalid Image URL" */}
               {validateImageUrl(product.image) ? (
                 <Image
                   src={product.image}
@@ -138,7 +140,7 @@ export default async function ProductsPage() {
                   width={250}
                   height={250}
                   className='mx-auto object-contain h-56 w-auto transition-transform duration-300 group-hover:scale-105 z-0 relative'
-                  priority // تحميل الصورة بأولوية عالية
+                  priority
                 />
               ) : (
                 <div className='h-56 w-full bg-gray-200 flex items-center justify-center rounded-lg'>
@@ -146,7 +148,6 @@ export default async function ProductsPage() {
                 </div>
               )}
 
-              {/* تفاصيل المنتج الأساسية */}
               <h2 className='text-lg font-semibold mt-4 truncate relative z-20 w-full px-2'>
                 {product.title}
               </h2>
