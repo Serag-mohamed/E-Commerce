@@ -225,9 +225,9 @@ export default function HomePage() {
               type='email'
               required
               placeholder=''
-              className='peer outline-none w-full h-full bg-transparent border-b-2 border-gray-300 focus:border-blue-500 px-2 transition'
+              className='peer outline-none w-full h-full bg-transparent border-b-2 border-gray-300 focus:border-blue-500 px-2 transition duration-300'
             />
-            <label className='absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 peer-focus:top-0 peer-focus:text-sm peer-focus:text-blue-500 peer-placeholder-shown:top-1/2'>
+            <label className='absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 peer-focus:top-0 peer-focus:text-sm peer-focus:text-blue-500 peer-placeholder-shown:top-1/2 transition-all duration-300'>
               Email
             </label>
           </div>
