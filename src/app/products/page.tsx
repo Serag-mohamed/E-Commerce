@@ -84,7 +84,9 @@ export default async function ProductsPage() {
                 href={
                   category === 'all'
                     ? '/products'
-                    : `/products/categories/${encodeURIComponent(category)}`
+                    : `/products/categories/${encodeURIComponent(
+                        category
+                      ).replace(/'/g, '%27')}`
                 }
                 className={`inline-block px-4 py-2 rounded-full transition duration-200 capitalize ${
                   // تمييز زر "All Products" لأنه الصفحة النشطة افتراضيًا
