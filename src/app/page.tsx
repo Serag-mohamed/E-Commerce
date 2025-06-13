@@ -177,8 +177,12 @@ export default function HomePage() {
                 <Link
                   key={category}
                   href={`/products/categories/${encodeURIComponent(
-                    category
-                  ).replace(/'/g, '%27')}`}
+                    category === "men's clothing"
+                      ? 'mens-clothing'
+                      : category === "women's clothing"
+                      ? 'womens-clothing'
+                      : category
+                  )}`}
                   className='relative group bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition overflow-hidden flex flex-col items-center text-center'
                 >
                   <div className='absolute z-10 inset-0 bg-blue-800/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition rounded-lg'>
