@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ShoppingCart, CircleUserRound } from 'lucide-react';
 
@@ -16,12 +16,35 @@ const iconLinks = [
   { href: '/cart', icon: ShoppingCart, label: 'Cart' },
   { href: '/account', icon: CircleUserRound, label: 'Account' },
 ];
+interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
   const pathname = usePathname();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+  // دالة لحساب العدد الإجمالي للعناصر في السلة من localStorage
+  const getTotalItems = () => {
+    if (typeof window !== 'undefined') {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      return cart.reduce(
+        (total: number, item: CartItem) => total + item.quantity,
+        0
+      );
+    }
+    return 0;
+  };
+
+  useEffect(() => {
+    setTotalItems(getTotalItems());
+  }, [pathname]);
 
   return (
     <nav className='bg-white shadow-md sticky top-0 z-50'>
@@ -74,6 +97,12 @@ const Navbar = () => {
                   title={label}
                 >
                   <Icon className='w-6 h-6' />
+                  {/* عرض عدد العناصر فوق أيقونة السلة فقط */}
+                  {label === 'Cart' && totalItems > 0 && (
+                    <span className='absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold'>
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -124,12 +153,18 @@ const Navbar = () => {
                 <Link
                   key={href}
                   href={href}
-                  className={`hover:text-blue-600 transition-colors duration-300 ${
+                  className={`relative hover:text-blue-600 transition-colors duration-300 ${
                     isActive ? 'text-blue-600' : 'text-gray-700'
                   }`}
                   title={label}
                 >
                   <Icon className='w-5 h-5' />
+                  {/* عرض العدد في الموبايل أيضا فوق أيقونة السلة */}
+                  {label === 'Cart' && totalItems > 0 && (
+                    <span className='absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-semibold'>
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
               );
             })}
